@@ -52,7 +52,7 @@ class Dataset():
             print('- Creating test and train datasets for', model,' model...')
             self.train_x, self.test_x, train_output, test_label = train_test_split(self.sensal, self.FP,
                                                                   test_size = test_size,
-                                                                  random_state = 13)
+                                                                  shuffle = False)
             # Components of the force                                                              
             fz1_train_label = train_output[:,2]
             fz2_train_label = train_output[:,5]
@@ -68,7 +68,8 @@ class Dataset():
                 print('- Creating validation and train datasets...')
                 self.train_x, self.val_x, train_label, val_label = train_test_split(self.train_x, train_output,
                                                                           test_size = val_size,
-                                                                          random_state = 13)
+                                                                          random_state = 13,
+                                                                          shuffle = False)
                 # Components of the force                                                              
                 fz1_train_label = train_label[:,0]
                 fz2_train_label = train_label[:,1]
@@ -222,10 +223,12 @@ class Multi_Datasets():
         self.chopped_train_xs = []; self.chopped_train_labels = [];
         self.chopped_test_xs = []; self.chopped_test_labels = [];
         self.chopped_val_xs = []; self.chopped_val_labels = [];
-        for sub in range(len(subject_n)):    
+        
+        shuffle = False if model in ['lrcn', 'c3d', 'convlstm2d'] else True
+        
+        for sub in range(len(subject_n)):
             train_x, test_x, train_output, test_label = train_test_split(self.sensals[sub], self.FPs[sub],
-                                                              test_size = test_size,
-                                                              random_state = 13)
+                                                              test_size = test_size, shuffle = shuffle)
          
           
             #Components of the force                                                              
@@ -244,7 +247,7 @@ class Multi_Datasets():
     
                 train_x, val_x, train_label, val_label = train_test_split(train_x, train_output,
                                                                           test_size = val_size,
-                                                                          random_state = 13)
+                                                                          shuffle = shuffle)
                 # Components of the force                                                              
                 fz1_train_label = train_label[:,2]
                 fz2_train_label = train_label[:,5]
@@ -345,20 +348,20 @@ class Multi_Datasets_fxfy():
             self.sensals.append(sensal)
         del FP, sensal,n, t
         #----------------- VISUALIZATION
-        print('- Visualization of the training data ...')
-        for sub in range(len(self.FPs)):
-            plt.plot(self.FPs[sub][:,0], label='fx1')
-            plt.plot(self.FPs[sub][:,1], label='fy1')
-            plt.plot(self.FPs[sub][:,3], label='fx2')
-            plt.plot(self.FPs[sub][:,4], label='fy2')
-            plt.title('Shear forces for subject'+str(sub+1));
-            plt.legend(loc='upper right')
-            plt.show()
+        # print('- Visualization of the label data ...')
+        # for sub in range(len(self.FPs)):
+        #     plt.plot(self.FPs[sub][:,0], label='fx1')
+        #     plt.plot(self.FPs[sub][:,1], label='fy1')
+        #     plt.plot(self.FPs[sub][:,3], label='fx2')
+        #     plt.plot(self.FPs[sub][:,4], label='fy2')
+        #     plt.title('Shear forces for subject'+str(sub+1));
+        #     plt.legend(loc='upper right')
+        #     plt.show()
             
-        im = Image.fromarray(np.uint8(self.sensals[0][15,:,:]),'L')
-        plt.imshow(im, cmap="magma") 
-        plt.title('A sample of the input data')
-        plt.show()
+        # im = Image.fromarray(np.uint8(self.sensals[0][15,:,:]),'L')
+        # plt.imshow(im, cmap="magma") 
+        # plt.title('A sample of the input data')
+        # plt.show()
         
         #------------ INPUT DATA NORMALIZATION TO BE BETWEEN (0,1)
         print('- Normalizing the data ...')
@@ -375,7 +378,16 @@ class Multi_Datasets_fxfy():
                 self.FPs[sub][:,i] = (self.FPs[sub][:,i]- np.amin(self.FPs[sub][:,i]))/(np.amax(self.FPs[sub][:,i])- np.amin(self.FPs[sub][:,i]))
             del temp1, temp2, temp3, temp4, i
         
-        
+        # print('- Visualization of the label after normalization data ...')
+        # for sub in range(len(self.FPs)):
+        #     plt.plot(self.FPs[sub][:,0], label='fx1')
+        #     plt.plot(self.FPs[sub][:,1], label='fy1')
+        #     plt.plot(self.FPs[sub][:,3], label='fx2')
+        #     plt.plot(self.FPs[sub][:,4], label='fy2')
+        #     plt.title('Shear forces for subject'+str(sub+1));
+        #     plt.legend(loc='upper right')
+        #     plt.show()
+            
         print('- Creating test and train datasets for', model,' model...')
         self.train_xs = []; self.test_xs = [] ;
         self.train_labels =[]; self.test_labels = [];
@@ -383,10 +395,13 @@ class Multi_Datasets_fxfy():
         self.chopped_train_xs = []; self.chopped_train_labels = [];
         self.chopped_test_xs = []; self.chopped_test_labels = [];
         self.chopped_val_xs = []; self.chopped_val_labels = [];
+        
+        shuffle = False if model in ['lrcn', 'c3d', 'convlstm2d'] else True
+        
         for sub in range(len(subject_n)):    
             train_x, test_x, train_output, test_label = train_test_split(self.sensals[sub], self.FPs[sub],
                                                               test_size = test_size,
-                                                              random_state = 13)
+                                                              shuffle = shuffle)
          
           
             #Components of the force                                                              
@@ -408,7 +423,7 @@ class Multi_Datasets_fxfy():
             if val_size > 0:
                 train_x, val_x, train_label, val_label = train_test_split(train_x, train_output,
                                                                           test_size = val_size,
-                                                                          random_state = 13)
+                                                                          shuffle = shuffle)
                 # Components of the force                                                              
                 fx1_train_label = train_label[:,0]
                 fy1_train_label = train_label[:,1]
